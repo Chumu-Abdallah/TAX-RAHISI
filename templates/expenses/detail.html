@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block title %}{{ expense.title }} - Details{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 p-4 md:p-8">
+  <div class="max-w-4xl mx-auto">
+    <a href="{% url 'expenses:list' %}" class="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 mb-6">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+      Rudi kwenye Gharama
+    </a>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Main -->
+      <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="p-8">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <div class="flex items-center gap-2 mb-3">
+                <span class="px-3 py-1 rounded-full text-xs font-bold {% if expense.is_deductible %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">
+                  {{ expense.get_category_display }}
+                </span>
+                {% if expense.is_loked %}<span class="px-3 py-1 rounded-full text-xs font-bold bg-gray-800 text-white">IMEFUNGWA</span>{% endif %}
+              </div>
+              <h1 class="text-2xl font-bold text-gray-900">{{ expense.title }}</h1>
+              <p class="text-sm text-gray-500 mt-2">{{ expense.business.business_name }} • {{ expense.expense_date|date:"l, d F Y" }}</p>
+            </div>
+            <div class="text-right">
+              <p class="text-3xl font-bold text-gray-900">{{ expense.total_amount|intcomma }}</p>
+              <p class="text-xs text-gray-500 uppercase tracking-wider">TZS - Jumla</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-4 mt-8 p-5 bg-gray-50 rounded-xl border border-gray-100">
+            <div>
+              <p class="text-xs text-gray-500 uppercase">Kiasi Halisi</p>
+              <p class="text-lg font-bold text-gray-900 mt-1">{{ expense.amount|intcomma }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-gray-500 uppercase">VAT</p>
+              <p class="text-lg font-bold text-blue-600 mt-1">{{ expense.vat_amount|intcomma }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-gray-500 uppercase">TRA Status</p>
+              <p class="text-sm font-bold mt-1 {% if expense.is_deductible %}text-green-600{% else %}text-red-600{% endif %}">
+                {% if expense.is_deductible %}✓ Inapunguza Faida{% else %}✗ Haipunguzi{% endif %}
+              </p>
+            </div>
+          </div>
+
+          {% if expense.description %}
+          <div class="mt-8">
+            <h3 class="text-sm font-bold text-gray-700 uppercase tracking-wider">Maelezo</h3>
+            <p class="text-sm text-gray-600 mt-2 bg-white border border-gray-100 p-4 rounded-xl">{{ expense.description }}</p>
+          </div>
+          {% endif %}
+
+          <div class="mt-8 grid grid-cols-2 gap-6 text-sm">
+            <div class="space-y-3">
+              <div class="flex justify-between"><span class="text-gray-500">Namba ya Risiti:</span><span class="font-medium text-gray-900">{{ expense.receipt_number|default:"-" }}</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">TIN ya Muuzaji:</span><span class="font-medium text-gray-900">{{ expense.supplier_tin|default:"-" }}</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">Imeidhinishwa:</span><span class="font-medium {% if expense.is_approved %}text-green-600{% else %}text-amber-600{% endif %}">{% if expense.is_approved %}Ndiyo{% else %}Bado{% endif %}</span></div>
+            </div>
+            <div class="space-y-3">
+              <div class="flex justify-between"><span class="text-gray-500">Aliyeingiza:</span><span class="font-medium text-gray-900">{{ expense.created_by.username|default:"System" }}</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">Tarehe ya Kuingiza:</span><span class="font-medium text-gray-900">{{ expense.created_at|date:"d/m/Y H:i" }}</span></div>
+            </div>
+          </div>
+        </div>
+
+        {% if not expense.is_loked %}
+        <div class="px-8 py-4 bg-gray-50 border-t border-gray-100 flex gap-3">
+          <a href="{% url 'expenses:list' %}?edit={{ expense.id }}" class="flex-1 text-center px-4 py-2.5 bg-white border border-gray-200 rounded-xl font-medium hover:bg-gray-100">Hariri</a>
+          <button class="flex-1 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-medium">Futa</button>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Side - Risiti & Hesabu -->
+      <div class="space-y-6">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+          <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">Risiti</h3>
+          {% if expense.receipt_file %}
+            <div class="border-2 border-dashed border-gray-200 rounded-xl p-4 text-center">
+              <p class="text-xs text-gray-500 mb-3">{{ expense.receipt_file.name }}</p>
+              <a href="{{ expense.receipt_file.url }}" target="_blank" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-medium">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13l-3 3m0 0l-3-3m3 3V8m0 13a9 9 0 110-18 9 9 0 010 18z"></path></svg>
+                Pakua / Angalia
+              </a>
+            </div>
+          {% else %}
+            <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 text-center">
+              <p class="text-xs text-amber-700 font-medium">Hakuna risiti iliyopakuliwa</p>
+              <p class="text-xs text-amber-600 mt-1">TRA inahitaji risiti kwa ukaguzi</p>
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 text-white">
+          <h3 class="text-sm font-bold uppercase tracking-wider text-gray-300">Athari kwenye Faida</h3>
+          <div class="mt-4 space-y-3 text-sm">
+            <div class="flex justify-between"><span class="text-gray-400">Mauzo (mf):</span><span>10,000,000 TZS</span></div>
+            <div class="flex justify-between"><span class="text-gray-400">Gharama hii:</span><span class="{% if expense.is_deductible %}text-green-400{% else %}text-red-400{% endif %}">- {{ expense.total_amount|intcomma }}</span></div>
+            <div class="border-t border-gray-700 pt-3 flex justify-between font-bold"><span>Faida Halisi:</span><span>{% if expense.is_deductible %}Inapungua{% else %}Haibadiliki{% endif %}</span></div>
+          </div>
+          <p class="text-xs text-gray-400 mt-4">Hesabu kutoka <code>ExpenseService.calculation_profit()</code></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

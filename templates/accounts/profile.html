@@ -1,0 +1,35 @@
+{% extends 'base_pro.html' %}
+{% block page_title %}Profile Yangu - {{ request.user.username }}{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-body text-center">
+                <div class="mb-3"><i class="bi bi-person-circle" style="font-size: 4rem;"></i></div>
+                <h5>{{ request.user.username }}</h5>
+                <p class="text-muted">{{ request.user.phone }}</p>
+                <p><span class="badge bg-dark">{{ request.user.get_role_display }}</span></p>
+                {% if request.user.email %}<p class="small">{{ request.user.email }}</p>{% endif %}
+                <hr>
+                <form method="post" action="{% url 'accounts:profile_update' %}">
+                    {% csrf_token %}
+                    <label class="form-label text-start w-100">Region / Mkoa</label>
+                    <input type="text" class="form-control mt-2" value="{{ request.user.region }}" name="region">
+                    <label class="form-label text-start w-100 mt-2">TIN</label>
+                    <input type="text" class="form-control" value="{{ request.user.tin_number }}" name="tin_number" readonly>
+                    <button class="btn btn-dark w-100 mt-3">Sasisha Region</button>
+                </form>
+                <hr>
+                <div class="text-start small">
+                    <p class="mb-1">is_active: <b>{{ request.user.is_active }}</b> | is_verified: <b>{{ request.user.is_valified }}</b></p>
+                    <p class="mb-1">Failed attempts: <b>{{ request.user.failed_attempts }}</b> | Locked: <b>{{ request.user.is_locked }}</b></p>
+                    <p class="mb-1">Last IP: {{ request.user.last_login_ip|default:"-" }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card"><div class="card-body"><h6>Biashara Zangu</h6><p class="text-muted">List ya biashara itaonekana hapa...</p></div></div>
+    </div>
+</div>
+{% endblock %}

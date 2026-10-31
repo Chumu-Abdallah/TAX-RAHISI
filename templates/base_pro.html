@@ -1,0 +1,99 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="sw">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}TAX-RAHISI{% endblock %} - TRA / ZRB</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+        <link href="{% static 'css/style.css' %}" rel="stylesheet">
+        
+        {% block extra_css %}{% endblock %}
+    </head>
+    <body class="bg-light">
+        <div class="container-fluid">
+            <div class="row g-0">
+                 <div class="col-md-2 p-0 sidebar d-none d-md-block">
+                    <div class="p-4 text-white">
+                        <h4 class="fw-bold"><i class="bi bi-receipt-cutoff"></i>TAX-RAHISI</h4>
+                        <small class="text-muted" id="tra-zrb-label">TRA - Tanzania Revenue Authority</small>
+                        <div id="zrb-badge" class="badge zrb-badge mt-2" style="display:none;">ZRB Mode - Zanzibar</div>
+                    </div>
+                    <nav class="nav flex-column px-3">
+                        {% if request.user.is_authenticated and request.user.businesses.first %}
+                            <a class="nav-link active" href="/reports/dashboard/{{ request.user.businesses.first.id }}/"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
+                        {% else %}
+                            <a class="nav-link active" href="/businesses/"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
+                        {% endif %}
+                        
+                        {% if request.user.role != 'OWNER' %}
+                        <a class="nav-link" href="/taxpayers/"><i class="bi bi-people me-2"></i> Walipa kodi </a>
+                        <a class="nav-link" href="{% url 'accounts:approved' %}"><i class="bi bi-person-check me-2"></i>Wafanya Biashara</a>
+                        {% endif %}
+                        <a class="nav-link" href="/businesses/"><i class="bi bi-shop me-2"></i> Biashara</a>
+                        <a class="nav-link" href="/sales/"><i class="bi bi-cart-plus me-2"></i> Mauzo</a>
+                        <a class="nav-link" href="/expenses/"><i class="bi bi-wallet2 me-2"></i> Matumizi</a>
+                        <a class="nav-link" href="/taxation/"><i class="bi bi-calculator me-2"></i> Kodi</a>
+                        <a class="nav-link" href="/payments/"><i class="bi bi-credit-card me-2"></i> Malipo<span id="notif-badge" class="badge ms-2" style="display:none;">0</span></a>
+                        <a class="nav-link" href="/reports/compliance/"><i class="bi bi-file-earmark-bar-graph me-2"></i> Ripoti TRA</a>
+                    </nav>
+                 </div>
+
+                 <div class="col-md-10 p-0">
+                    <div class="topbar p-3 d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-0">{% block page_title %}Dashboard{% endblock %}</h5>
+                            <small class="text-muted"><b>
+                            {% now "d M Y" %} - <span id="live-clock" style="color:rgb(65, 55, 248)">--:--:--</span>
+                            </b></small>
+                        </div>
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="fw-bold">TIN: {{ request.user.taxpayer_profile.tin|default:"-" }}</span>
+                            <div class="dropdown">  
+                                <a class="btn btn-outline-dark dropdown-toggle" data-bs-toggle="dropdown">{{ request.user.username|default:"User" }}</a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <form method="post" action="/accounts/logout/">
+                                            {% csrf_token %}
+                                            <button type="submit" class="dropdown-item" style="color:red;">Logout</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div> 
+                        </div>
+                    </div>
+
+                    <div class="p-4">
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-auto">{{ message }}</div>
+                            {% endfor %}
+                        {% endif %}
+                        {% block content %}{% endblock %}
+                    </div>
+                 </div>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+        <script src="{% static 'js/main.js' %}"></script>
+        <script>
+            function updateClock() {
+                const now = new Date();
+                const timeStr = now.toLocaleTimeString('sw-TZ', { 
+                    timeZone: 'Africa/Dar_es_Salaam',
+                    hour: '2-digit', 
+                    minute: '2-digit', 
+                    second: '2-digit',
+                    hour12: false
+                });
+                const el = document.getElementById('live-clock');
+                if(el) el.textContent = timeStr;
+            }
+            setInterval(updateClock, 1000);
+            updateClock();
+        </script>
+        {% block extra_js %}{% endblock %}
+    </body>
+</html>

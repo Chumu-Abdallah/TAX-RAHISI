@@ -1,0 +1,22 @@
+{% extends 'base_pro.html' %}
+{% block page_title %}Orodha ya Watumiaji - IsActiveVerified{% endblock %}
+{% block content %}
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <table class="table table-striped mb-0">
+            <thead class="table-dark"><tr><th>Phone</th><th>Username</th><th>Role</th><th>Region</th><th>TIN</th><th>Verified</th><th>Active</th><th>Failed</th></tr></thead>
+            <tbody>
+            {% for u in users %}
+            <tr>
+                <td>{{ u.phone }}</td><td>{{ u.username }}</td>
+                <td><span class="badge bg-warning text-dark">{{ u.role }}</span></td>
+                <td>{{ u.region }}</td><td>{{ u.tin_number }}</td>
+                <td>{% if u.is_verified %}<i class="bi bi-check-circle-fill text-success"></i>{% else %}<i class="bi bi-x-circle text-danger"></i>{% endif %}</td>
+                <td>{{ u.is_active }}</td><td>{{ u.failed_attempts }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

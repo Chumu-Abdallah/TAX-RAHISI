@@ -1,0 +1,37 @@
+{% extends 'base_pro.html' %}
+{% block title %}{{ object.business_name }}{% endblock %}
+{% block page_title %}{{ object.business_name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div claa="col-md-8">
+        <div class="card shadow-sm border-0 mb-3">
+            <div class="card-body">
+                <h5>{{ object.business_name }} <small class="text-muted">{{ object.brela_reg_no }}</small></h5>
+                <p>Biashara(Trade): {{ object.trade_name|default:"-" }} | TIN: {{ object.tin|default:"-" }}</p>
+                <p>Aina(Type): {{ object.get_business_type_display }} | Eneo (Location): {{ object.region }}, {{ object.district }}, {{ object.ward }}</p>
+                <hr>
+                <p><strong>Mauzo ya Mwaka(Annual turnover):</strong> TZS {{object.annual_turnover }}</p>
+                <p><strong>Hali ya VAT(VAT status):</strong>
+                    {% if object.is_vat_registered %} Imesajiliwa ({{ object,vat_number }})
+                    {% else %} {% if object.is_vat_eligible %}<span class="text-danger fw-bold">Anafaa Kusajili VAT - Imevuka 100M</span>{% else %} Hajafikia threshold{% endif %}{% endif %}
+                </p>
+                <p><strong>Mlipakodi(Taxpayer):</strong> {{ object.taxpayer }}</p>
+                <p class="text-muted small">Imeundwa: {{ object.created_at }} | Updated: {{ object.updated_at }}</p>
+                <a href="{% url 'businesess:update' object.pk %}" class="btn btn-primary">Hariri</a>
+                <a href="{% url 'businesses:list' %}" class="btn btn-light">Orodha</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card card-stat shadow-sm p-3">
+            <h6 class="text-muted">TRA Complience Check</h6>
+            {% if object.is_vat_eligible and not object.is_vat_registered %}
+            <div class="alert-danger mb-0">Biashara hii inatakiwa isajiliwe VAT mara moja!</div>
+            {% else %}
+            <div class="alert-success mb-0">Iko sawa na TRA.</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

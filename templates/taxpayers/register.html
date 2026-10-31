@@ -1,0 +1,120 @@
+{% extends 'base_pro.html' %}
+{% block page_title %}Sajili Mlipakodi Mpya{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-person-plus-fill me-2 text-primary"></i> Sajili Mlipakodi - TRA</h5>
+                <a href="{% url 'taxpayers:list' %}" class="btn btn-light btn-sm"><i class="bi bi-arrow-left"></i> Rudi</a>
+            </div>
+            <div class="card-body p-4">
+                {% if form.errors %}
+                <div class="alert alert-danger">
+                    <strong>Kuna makosa:</strong>
+                    <ul class="mb-0 mt-2">
+                        {% for field, errors in form.errors.items %}
+                            {% for error in errors %}<li>{{ field }}: {{ error }}</li>{% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        
+                        <!-- TIN & NIDA -->
+                        <div class="col-md-4">
+                            <label class="form-label">TIN Number *</label>
+                            {{ form.tin_number }}
+                            {% if form.tin_number.errors %}<small class="text-danger">{{ form.tin_number.errors.0 }}</small>{% endif %}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">NIDA Number *</label>
+                            {{ form.nida_number }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Aina ya Mlipakodi *</label>
+                            {{ form.taxpayer_type }}
+                        </div>
+
+                        <!-- Majina -->
+                        <div class="col-md-4">
+                            <label class="form-label">First Name *</label>
+                            {{ form.first_name }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Middle Name</label>
+                            {{ form.middle_name }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Last Name *</label>
+                            {{ form.last_name }}
+                        </div>
+
+                        <!-- Business Name - Inaonekana kwa LTD / SOLE tu -->
+                        <div class="col-md-12" id="businessNameDiv">
+                            <label class="form-label">Jina la Biashara / Kampuni</label>
+                            {{ form.business_name }}
+                            <small class="text-muted">Lazima kwa LTD na SOLE</small>
+                        </div>
+
+                        <!-- Location - Input zote kama ulivyotaka -->
+                        <div class="col-md-4">
+                            <label class="form-label">Mkoa / Region *</label>
+                            {{ form.region }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Wilaya / District *</label>
+                            {{ form.district }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Kata / Ward *</label>
+                            {{ form.ward }}
+                        </div>
+
+                        <div class="col-12"><hr></div>
+                        <div class="col-12 d-flex justify-content-end gap-2">
+                            <a href="{% url 'taxpayers:list' %}" class="btn btn-light">Ghairi</a>
+                            <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle me-1"></i> Hifadhi Mlipakodi</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    const typeField = document.getElementById('id_taxpayer_type');
+    const bizDiv = document.getElementById('businessNameDiv');
+    
+    function toggleBiz(){
+        const val = typeField.value;
+        if(val === 'LTD' || val === 'SOLE'){
+            bizDiv.style.display = 'block';
+        } else {
+            bizDiv.style.display = 'none';
+        }
+    }
+    if(typeField){
+        typeField.addEventListener('change', toggleBiz);
+        toggleBiz();
+    }
+
+    // Add Bootstrap class kwa inputs zote za Django form
+    document.querySelectorAll('input, select').forEach(el => {
+        if(!el.classList.contains('form-control') && !el.classList.contains('form-select') && el.type !== 'checkbox'){
+            if(el.tagName === 'SELECT'){
+                el.classList.add('form-select');
+            } else {
+                el.classList.add('form-control');
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

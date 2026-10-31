@@ -1,0 +1,47 @@
+{% extends 'base_pro.html' %}
+{% block page_title %}Sajili Mlipakodi{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+<div class="col-md-8">
+<div class="card p-4">
+    <h5 class="mb-3">Fomu ya Usajili TRA</h5>
+    <form method="post" novalidate>
+        {% csrf_token %}
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">TIN Number *</label>
+                {{ form.tin_number }}
+                {% if form.tin_number.errors %}<small class="text-danger">{{ form.tin_number.errors }}</small>{% endif %}
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">NIDA *</label>
+                {{ form.nida_number }}
+            </div>
+            <div class="col-md-4">
+                <label>Aina ya Mlipakodi</label>
+                {{ form.taxpayer_type }}
+            </div>
+            <div class="col-md-8">
+                <label>Jina la Biashara (Kampuni)</label>
+                {{ form.business_name }}
+            </div>
+            <div class="col-md-4">{{ form.first_name.label_tag }}{{ form.first_name }}</div>
+            <div class="col-md-4">{{ form.middle_name.label_tag }}{{ form.middle_name }}</div>
+            <div class="col-md-4">{{ form.lastname.label_tag }}{{ form.lastname }}</div>
+            
+            <div class="col-md-4">{{ form.region.label_tag }}{{ form.region }}</div>
+            <div class="col-md-4">{{ form.district.label_tag }}{{ form.district }}</div>
+            <div class="col-md-4">{{ form.ward.label_tag }}{{ form.ward }}</div>
+        </div>
+        
+        {% if form.non_field_errors %}
+        <div class="alert alert-danger mt-3">{{ form.non_field_errors }}</div>
+        {% endif %}
+        
+        <button class="btn btn-dark w-100 mt-4">Hifadhi na Tuma TRA</button>
+    </form>
+</div>
+</div>
+</div>
+{% endblock %}

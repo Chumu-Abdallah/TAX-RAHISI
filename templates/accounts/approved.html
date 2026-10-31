@@ -1,0 +1,29 @@
+{% extends 'base_pro.html' %}
+{% block content %}
+<div class="container mt-4">
+<h3>Wafanya Biashara</h3>
+<table class="table">
+<tr><th>Jina</th><th>Simu</th><th>Nida</th><th>TIN</th><th>Mkoa</th><th>Role</th><th>Action</th></tr>
+{% for u in approved_users %}
+<tr>
+<td>{{ u.username }}</td>
+<td>{{ u.phone }}</td>
+<td>{{u.nida_number}}</td>
+<td>{{u.tin_number}}</td>
+<td>{{u.region}}</td>
+<td>{{ u.role }}</td>
+
+<td>
+{% if u.id != request.user.id %}
+  {% if request.user.role == 'MKURUGENZI' and u.role != 'MKURUGENZI' %}
+    <form method="post" action="{% url 'accounts:delete_approved_user' u.id %}">{% csrf_token %}<button class="btn btn-danger btn-sm">Futa</button></form>
+  {% elif request.user.role == 'ADMIN' and u.role == 'OWNER' %}
+    <form method="post" action="{% url 'accounts:delete_approved_user' u.id %}">{% csrf_token %}<button class="btn btn-danger btn-sm">Futa</button></form>
+  {% endif %}
+{% endif %}
+</td>
+</tr>
+{% endfor %}
+</table>
+</div>
+{% endblock %}

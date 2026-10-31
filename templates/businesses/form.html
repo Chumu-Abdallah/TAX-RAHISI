@@ -1,0 +1,67 @@
+{% extends 'base_pro.html' %}
+{% block title %}{% if form.instance.pk %}Hariri{% else %}Ongeza{% endif %}Biashara{% endblock %}
+{% block page_title %}{% if form.instance.pk %}Hariri Biashara{% else %}Sajili Biashara Mpya{% endif %}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card shadow-sm border-0">
+            <div class="card-board p-4">
+                <form method="post"novalidate>
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}<div class="alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+
+                    <h6 class="fw-bold text-primary mb-3">1. Taarifa Zamsingi</h6>
+                    <div class="row">
+                        {% if form.taxpayer %}
+                        <div class="col-md-6 md-3"><label>Mlipakodi (Taxpayer)</label>{{ form.taxpayer}}<div class="text-danger small">{{ form.taxpayer.errors }}</div></div>
+                        {% endif %}
+                        <div class="col-md-6 mb-3"><label>Jina La Biashara *</label>{{ form.business_name }}</div>
+                        <div class="col-md-6 mb-3"><label>Jina la biashara ya kufanya (Trade Name)</label>{{ form.trade_name }}</div>
+                        <div class="col-md-4 mb-3"><label>BRELA Reg No</label>{{ form.brela_reg_no }}<div class="text-danger small">{{ form.brela_reg_no.errors }}</div>
+                        <div class="col-md-4 mb-3"><label>TIN</label>{{ form.tin }}</div>
+                        <div class="col-md-4 mb-3"><label>Aina ya biashara</label>{{ form.business_type }}</div>
+                    </div>
+
+                    <hr>
+                    <h6 class="fw-bold text-primary mb-3">2. Mahali - Tanzania</h6>
+                    <div class="row">
+                        <div class="col-md-4 mb-3"><label>Mkoa (Region)</label>{{ form.region }}</div>
+                        <div class="col-md-4 mb-3"><label>Wilaya (District)</label>{{ form.district }}</div>
+                        <div class="col-md-4 mb-3"><label>Kata (Ward)</label>{{ form.ward }}</div>
+                    </div>
+
+                    <hr>
+                    <h6 class="fw-bold text-primary mb-3">3. Uzigatiaji wa Kodi - TRA Complience</h6>
+                    <div class="row align-items-end">
+                        <div class="col-md-4 mb-3"><label>Mauzo ya Mwaka (Annual Tunover) TZS</label>{{ form.annual_turnover }}<small class="text-muted">Threshold ya VAT: 100</small></div>
+                        <div class="col-md-3 mb-3"><div class="form-check"><label class="form-check-label">{{ form.is_vat_registered }} Nimejisajili VAT?</label></div></div>
+                        <div class="col-md-3 mb-3"><label>VAT Number</label>{{ form.vat_number }}<div class="text-danger small">{{ form.vat_number.errors }}</div></div>
+                    </div>
+
+                    {% if form.request_vat_notice %}
+                    <div class="alert alert-warning"><i class="bi bi-exclamation-triangle"></i>Tahadhari: Mauzo yamevuka 100M, inabidi Ujisajili VAT sasa.</div>
+                    {% endif %}
+
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary px-4">{%  if form.instance.pk %}Hifadhi Mabadiliko{% else %}Sajili Biashara{% endif %}</button>
+                        <a href="{% url 'businesses:list' %}" class="btn btn-light">Rudi</a>
+                    </div>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', () => {
+                        const vatCheck = document.querySelector('[name="is_vat_registered"]');
+                        const vatField = document.querySelector('[name="vat_number"]').closest('.mb-3');
+                        function toggleVat(){
+                            if(vatCheck.checked){ vatField.style.display='block'; vatField.style.opacity='1'; }
+                            else{ vatField.style.opacity='0.5'; }
+                        }
+                        if(vatCheck){ vatCheck.addEventListener('change', toggleVat); toggleVat(); }
+                        });
+                    </script>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

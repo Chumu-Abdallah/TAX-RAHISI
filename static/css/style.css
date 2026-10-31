@@ -1,0 +1,153 @@
+/* =========================================
+   TAX-RAHISI v4.0 - TRA / ZRB FINAL PRO
+   Interactive | Unified Tables | Blue Hover
+   ========================================= */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root{
+  --tra-blue:#1e3a8a;
+  --tra-blue-deep:#172554;
+  --tra-blue-light:#eef2ff;
+  --tra-blue-hover-bg:#dbeafe;
+  --tra-blue-blur:rgba(219,234,254,0.75);
+  --tra-blue-hover:#1e40af;
+  --bg:#f8fafc;
+  --card:#ffffff;
+  --text:#0f172a;
+  --muted:#64748b;
+  --border:#e2e8f0;
+  --border-light:#f1f5f9;
+  --radius:14px;
+  --radius-sm:10px;
+  --shadow-sm:0 1px 3px rgba(15,23,42,0.04);
+  --shadow-blue:0 8px 24px rgba(30,58,138,0.12);
+}
+
+*{font-family:'Inter',sans-serif}
+body{background:var(--bg)!important;color:var(--text);font-size:14.5px;-webkit-font-smoothing:antialiased}
+.container-fluid{padding:0}.row.g-0{margin:0}
+
+/* ========== SIDEBAR ========== */
+.sidebar{background:var(--card)!important;border-right:1px solid var(--border);min-height:100vh;position:sticky;top:0}
+.sidebar .p-4{border-bottom:1px solid var(--border-light);background:linear-gradient(180deg,#fff 0%,#fcfdff 100%)}
+.sidebar h4{color:var(--tra-blue);font-weight:800!important;font-size:1.25rem}
+.sidebar small{color:var(--muted);font-size:0.75rem}
+
+/* ========== NAVIGATION - HOVER BACKGROUND BLUE KAMA DASHBOARD ========== */
+.sidebar .nav{padding:12px 10px}
+.sidebar .nav-link{
+  color:var(--muted);font-weight:500;font-size:0.875rem;
+  padding:11px 14px;border-radius:var(--radius-sm);
+  margin:4px 0;display:flex;align-items:center;gap:10px;
+  border:1px solid transparent;
+  transition:all 0.28s cubic-bezier(.4,0,.2,1);
+  position:relative;overflow:hidden;
+}
+.sidebar .nav-link::before{
+  content:"";position:absolute;left:0;top:0;height:100%;width:0;
+  background:var(--tra-blue-light);transition:width 0.28s ease;z-index:-1;
+}
+.sidebar .nav-link i{font-size:1.15rem;transition:all 0.28s ease}
+
+/* HOVER - Background Blue kama dashboard background */
+.sidebar .nav-link:hover{
+  background:var(--tra-blue-light)!important;
+  background:var(--tra-blue-blur)!important;
+  color:var(--tra-blue)!important;
+  border-color:#bfdbfe;
+  transform:translateX(6px);
+  box-shadow:var(--shadow-blue);
+}
+.sidebar .nav-link:hover::before{width:100%}
+.sidebar .nav-link:hover i{transform:scale(1.15) rotate(2deg);color:var(--tra-blue)}
+
+/* ACTIVE */
+.sidebar .nav-link.active{
+  background:var(--tra-blue)!important;color:#fff!important;
+  box-shadow:0 6px 20px rgba(30,58,138,0.3);
+  transform:translateX(2px);
+}
+.sidebar .nav-link.active::before{display:none}
+.sidebar .nav-link:active{transform:scale(0.96)}
+
+/* ========== TOPBAR ========== */
+.topbar{
+  background:rgba(255,255,255,0.9)!important;backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);padding:18px 28px!important;
+  position:sticky;top:0;z-index:100;
+}
+
+/* ========== CARDS ========== */
+.card{
+  background:var(--card);border:1px solid var(--border)!important;
+  border-radius:var(--radius)!important;box-shadow:var(--shadow-sm);
+  transition:all 0.3s cubic-bezier(.4,0,.2,1);
+}
+.card:hover{transform:translateY(-2px);box-shadow:var(--shadow-blue)!important;border-color:#bfdbfe!important}
+.card-body{padding:22px 24px!important}
+
+/* ========== BUTTONS ========== */
+.btn{border-radius:var(--radius-sm);font-weight:600;font-size:0.875rem;padding:9px 18px;transition:all 0.25s ease}
+.btn-primary{background:var(--tra-blue);border-color:var(--tra-blue)}
+.btn-primary:hover{background:var(--tra-blue-hover);transform:translateY(-1px);box-shadow:0 8px 20px rgba(30,58,138,0.25)}
+.btn-primary:active,.btn:active{transform:scale(0.97)}
+.btn-dark:hover{background:#1e293b!important;transform:translateY(-1px)}
+.btn-danger:hover,.btn-outline-primary:hover{transform:translateY(-1px)}
+
+/* ========== UNIFIED TABLES - ZOTE ZINAFANANA ========== */
+.table-responsive{border-radius:var(--radius);border:1px solid var(--border);background:#fff;box-shadow:var(--shadow-sm)}
+.table{margin-bottom:0;width:100%}
+
+/* HII NDIO FIX KUU - INASHINDA BOOTSTRAP YOTE */
+.table th,.table td,
+.table thead th,.table-dark th,
+.table-striped th,.table-striped td,
+.table-sm th,.table-sm td{
+  text-align:center !important;
+  vertical-align:middle !important;
+  white-space:nowrap;
+}
+.table thead th{
+  font-size:0.72rem;text-transform:uppercase;letter-spacing:0.07em;
+  color:var(--muted);font-weight:700;
+  padding:16px 12px;background:#f8fafc!important;
+  border-bottom:1px solid var(--border)!important;
+}
+.table-dark th{background:#1e293b!important;color:#e2e8f0!important}
+.table tbody td{
+  padding:14px 12px;border-color:var(--border-light)!important;
+  font-size:0.89rem;font-weight:500;color:#334155;
+  transition:all 0.2s ease;
+}
+.table tbody tr{transition:all 0.25s ease}
+
+/* HOVER BACKGROUND BLUE PROFESSIONAL - KAMA DASHBOARD */
+.table-hover tbody tr:hover,
+.table-striped tbody tr:hover,
+.table tbody tr:hover{
+  background:var(--tra-blue-hover-bg)!important;
+  background:var(--tra-blue-blur)!important;
+  cursor:pointer;
+}
+.table-hover tbody tr:hover td{
+  color:var(--tra-blue-deep)!important;background:transparent!important;
+}
+
+/* ========== BADGES ========== */
+.badge{border-radius:8px;font-weight:700;font-size:0.7rem;padding:6px 10px;transition:all 0.2s ease}
+.badge:hover{transform:scale(1.08)}
+
+/* ========== ANIMATIONS ========== */
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.p-4 > .card,.p-4 > .d-flex{animation:fadeUp 0.4s ease both}
+.p-4 > .card:nth-child(2){animation-delay:0.05s}
+.p-4 > .card:nth-child(3){animation-delay:0.1s}
+@keyframes slideIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+.sidebar .nav-link{animation:slideIn 0.3s ease both}
+.sidebar .nav-link:nth-child(1){animation-delay:0.05s}
+.sidebar .nav-link:nth-child(2){animation-delay:0.1s}
+.sidebar .nav-link:nth-child(3){animation-delay:0.15s}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:10px}
+::-webkit-scrollbar-thumb:hover{background:#93c5fd}

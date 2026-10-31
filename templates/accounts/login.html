@@ -1,0 +1,70 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ingia - TAX-RAHISI</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light" style="background: #0F172A !important;">
+<div class="container">
+<div class="row justify-content-center align-items-center" style="min-height:100vh;">
+<div class="col-md-4">
+<div class="card shadow-lg border-0"><div class="card-body p-4">
+<h3 class="fw-bold text-center">TAX-RAHISI</h3>
+<p class="text-center text-muted small">Ingia kwa namba ya simu</p>
+<div id="login-error" class="alert alert-danger d-none"></div>
+<form id="loginForm">
+{% csrf_token %}
+<div class="mb-3">
+<label class="form-label">Namba ya Simu</label>
+<input type="text" name="phone" id="id_phone" class="form-control form-control-lg" placeholder="255XXXXXXXX" required>
+</div>
+<div class="mb-3">
+<label class="form-label">Password</label>
+<input type="password" name="password" id="id_password" class="form-control form-control-lg" required>
+</div>
+<button type="submit" class="btn btn-dark w-100 btn-lg" id="btnLogin">Ingia</button>
+</form>
+<p class="mt-3">Huna akaunti? <a href="{% url 'accounts:register' %}">Jisajili hapa</a></p>
+</div></div></div></div></div>
+<script>
+function normalizePhone(phone){
+    if(!phone) return phone;
+    let p = phone.toString().trim().replace(/\s+/g,'').replace(/-/g,'');
+    if(p.startsWith('+')) p = p.substring(1);
+    if(p.startsWith('0')) p = '255' + p.substring(1);
+    if(p.length===9) p = '255' + p;
+    if(!p.startsWith('+')) p = '+' + p;
+    return p;
+}
+function getCSRF(){
+    return document.querySelector('[name=csrfmiddlewaretoken]')?.value ||
+           document.cookie.split('; ').find(r=>r.startsWith('csrftoken='))?.split('=')[1];
+}
+document.getElementById('loginForm').addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const btn = document.getElementById('btnLogin');
+    btn.disabled=true; btn.innerText='Inaingia...';
+    let phone = normalizePhone(document.getElementById('id_phone').value);
+    const password = document.getElementById('id_password').value;
+    console.log("Sending phone:", phone);
+    const res = await fetch("{% url 'accounts:login' %}", {
+        method:'POST',
+        headers:{'Content-Type':'application/json','X-CSRFToken': getCSRF()},
+        body: JSON.stringify({phone: phone, password: password})
+    });
+    const data = await res.json();
+    console.log("Response:", res.status, data);
+    if(res.ok){
+        window.location.href = "{% url 'businesses:list' %}";
+    } else {
+        document.getElementById('login-error').classList.remove('d-none');
+        document.getElementById('login-error').innerText = data.error || "Namba au Password sio sahihi";
+        btn.disabled=false; btn.innerText='Ingia';
+    }
+});
+</script>
+</body>
+</html>

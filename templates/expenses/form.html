@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% block title %}{% if form.instance.pk %}Hariri Gharama{% else %}Gharama Mpya{% endif %} - Tax Rahisi{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 p-4 md:p-8">
+  <div class="max-w-3xl mx-auto">
+    <!-- Breadcrumb -->
+    <div class="flex items-center gap-2 text-sm text-gray-500 mb-6">
+      <a href="{% url 'expenses:list' %}" class="hover:text-blue-600">Gharama</a>
+      <span>/</span>
+      <span class="text-gray-900 font-medium">{% if form.instance.pk %}Hariri{% else %}Mpya{% endif %}</span>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      <div class="px-8 py-6 border-b border-gray-100 bg-gradient-to-r from-blue-600 to-indigo-600">
+        <h1 class="text-xl font-bold text-white">{% if form.instance.pk %}Hariri Gharama{% else %}Sajili Gharama Mpya{% endif %}</h1>
+        <p class="text-blue-100 text-sm mt-1">Jaza taarifa sahihi kwa ajili ya TRA - gharama zisizo na risiti hazikubaliki</p>
+      </div>
+
+      <form method="POST" enctype="multipart/form-data" class="p-8 space-y-6">
+        {% csrf_token %}
+        
+        {% if form.non_field_errors %}
+        <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
+          {{ form.non_field_errors }}
+        </div>
+        {% endif %}
+
+        <!-- Business - Hidden kwa sasa unatumia business_id -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Aina ya Gharama *</label>
+            {{ form.category }}
+            {% if form.category.errors %}<p class="text-xs text-red-600 mt-1">{{ form.category.errors.0 }}</p>{% endif %}
+            <p class="text-xs text-gray-400 mt-1" id="category-hint"></p>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Tarehe ya Gharama *</label>
+            {{ form.expense_date }}
+            {% if form.expense_date.errors %}<p class="text-xs text-red-600 mt-1">{{ form.expense_date.errors.0 }}</p>{% endif %}
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Jina la Gharama *</label>
+          {{ form.title }}
+          {% if form.title.errors %}<p class="text-xs text-red-600 mt-1">{{ form.title.errors.0 }}</p>{% endif %}
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Kiasi (TZS) *</label>
+            {{ form.amount }}
+            {% if form.amount.errors %}<p class="text-xs text-red-600 mt-1">{{ form.amount.errors.0 }}</p>{% endif %}
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">VAT (TZS)</label>
+            {{ form.vat_amount }}
+            <p class="text-xs text-gray-400 mt-1">Weka 0 kama hakuna VAT</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">TIN ya Muuzaji</label>
+            {{ form.supplier_tin }}
+            {% if form.supplier_tin.errors %}<p class="text-xs text-red-600 mt-1">{{ form.supplier_tin.errors.0 }}</p>{% endif %}
+            <p class="text-xs text-amber-600 mt-1 hidden" id="tin-warning">⚠️ Ukiweka VAT, TIN ni lazima kwa TRA</p>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Namba ya Risiti</label>
+            {{ form.receipt_number }}
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Pakia Risiti / Invoice</label>
+          {{ form.receipt_file }}
+          <p class="text-xs text-gray-400 mt-1">PDF, JPG, PNG - Max 5MB</p>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Maelezo</label>
+          {{ form.description }}
+        </div>
+
+        <div class="flex gap-3 pt-4 border-t border-gray-100">
+          <a href="{% url 'expenses:list' %}" class="flex-1 text-center px-6 py-3 border border-gray-200 rounded-xl font-medium hover:bg-gray-50 transition">Ghairi</a>
+          <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-medium shadow-lg shadow-blue-600/20 transition">
+            {% if form.instance.pk %}Hifadhi Mabadiliko{% else %}Hifadhi Gharama{% endif %}
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- TRA Info Box -->
+    <div class="mt-6 bg-amber-50 border border-amber-200 rounded-2xl p-5">
+      <h4 class="text-sm font-bold text-amber-800 flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        Sheria ya TRA
+      </h4>
+      <ul class="text-xs text-amber-700 mt-2 space-y-1 list-disc list-inside">
+        <li>Gharama za Faini, Adhabu, Misaada binafsi <b>HAZIKUBALIKI</b> kupunguza faida</li>
+        <li>Ukidai VAT, lazima uwe na TIN ya muuzaji na risiti halali</li>
+        <li>Baada ya kufunga mwezi, gharama haihaririki (is_loked)</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script>
+// Simple UX logic
+const cat = document.querySelector('[name="category"]');
+const vat = document.querySelector('[name="vat_amount"]');
+const tinWarn = document.getElementById('tin-warning');
+const catHint = document.getElementById('category-hint');
+
+const nonDeductible = ['FINE','DON'];
+function updateHints(){
+  if(nonDeductible.includes(cat.value)){
+    catHint.textContent = '⚠️ Aina hii HAIKUBALIKI na TRA kupunguza faida';
+    catHint.className = 'text-xs text-red-600 mt-1';
+  } else {
+    catHint.textContent = '✓ Inakubalika kupunguza faida';
+    catHint.className = 'text-xs text-green-600 mt-1';
+  }
+  if(parseFloat(vat.value) > 0){
+    tinWarn.classList.remove('hidden');
+  } else {
+    tinWarn.classList.add('hidden');
+  }
+}
+cat.addEventListener('change', updateHints);
+vat.addEventListener('input', updateHints);
+updateHints();
+</script>
+{% endblock %}

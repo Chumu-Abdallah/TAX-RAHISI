@@ -1,0 +1,107 @@
+{% extends 'base_pro.html' %}
+{% block title %}Tengeneza Akaunti{% endblock %}
+{% block page_title %}Akaunti Mpya{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <b>RegisterView</b>
+                <span class="badge bg-dark float-end">Role: {{ request.user.role|default:"Guest" }}</span>
+            </div>
+            <div class="card-body">
+                <form method="post" id="registerForm">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Username *</label>
+                            <input type="text" name="username" class="form-control" placeholder="juma_admin" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Phone * (USERNAME_FIELD)</label>
+                            <input type="text" name="phone" id="id_phone" class="form-control" placeholder="2557XXXXXXXX" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="email" class="form-control" placeholder="juma@tax-rahisi.go.tz">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Role *</label>
+                            <select name="role" class="form-select" required>
+                                <option value="OWNER">OWNER - Mmiliki wa Biashara</option>
+                                <option value="MHASIBU">MHASIBU - Mhasibu</option>
+                                <option value="AFISA_KODI">AFISA_KODI - Afisa Kodi</option>
+                                <option value="MKURUGENZI">MKURUGENZI - Mkurugenzi</option>
+                                <option value="ADMIN">ADMIN - Admin</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">TIN Number</label>
+                            <input type="text" name="tin_number" class="form-control" placeholder="123456789">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">NIDA Number</label>
+                            <input type="text" name="nida_number" class="form-control" placeholder="1990XXXXXXXXXXXXXXX">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Region / Mkoa *</label>
+                            <input type="text" name="region" id="id_region" class="form-control" placeholder="Dar es Salaam" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Password *</label>
+                            <input type="password" name="password" class="form-control" required minlength="8">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Confirm Password *</label>
+                            <input type="password" name="confirm_password" class="form-control" required>
+                        </div>
+                    </div>
+                    <div id="zrb-badge" class="alert alert-info mt-3" style="display:none;"><i class="bi bi-info-circle"></i> Zanzibar detected - ZRB Mode</div>
+                    <button type="submit" class="btn btn-dark w-100 btn-lg mt-4" id="btnRegister">Tengeneza Akaunti</button>
+                </form>
+                <div id="result" class="alert alert-success mt-3 d-none"></div>
+                <p class="mt-3">Tayari una akaunti? <a href="{% url 'accounts:login' %}">Ingia hapa</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// === FIX TU - NORMALIZER ===
+function normalizePhone(phone) {
+    if (!phone) return phone;
+    let p = phone.trim().replace(/\s+/g, '').replace(/-/g, '');
+    if (p.startsWith('+')) p = p.substring(1);
+    if (p.startsWith('0')) p = '255' + p.substring(1);
+    if (p.length === 9) p = '255' + p;
+    return '+' + p;
+}
+
+document.getElementById('registerForm').addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const formData = Object.fromEntries(new FormData(e.target));
+    if(formData.password !== formData.confirm_password){
+        alert('Password hazifanani'); return;
+    }
+    formData.phone = normalizePhone(formData.phone); // <--- FIX HAPA TU
+    const res = await fetch("{% url 'accounts:register' %}", {
+        method:'POST',
+        headers:{'Content-Type':'application/json','X-CSRFToken':'{{ csrf_token }}'},
+        body: JSON.stringify(formData)
+    });
+    const data = await res.json();
+    if(res.status===201){
+        document.getElementById('result').classList.remove('d-none');
+        document.getElementById('result').innerHTML = `Akaunti imetengenezwa! ID: ${data.id} - ${data.phone}`;
+        e.target.reset();
+    } else {
+        alert(data.error ? data.error : JSON.stringify(data));
+    }
+});
+document.getElementById('id_region')?.addEventListener('input', function(){
+    const v = this.value.toLowerCase();
+    const isZ = ['mjini','unguja','pemba','zanzibar','kaskazini','kusini'].some(k=>v.includes(k));
+    document.getElementById('zrb-badge').style.display = isZ? 'block':'none';
+});
+</script>
+{% endblock %}

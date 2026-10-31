@@ -1,0 +1,70 @@
+{% extends 'base_pro.html' %}
+{% block page_title %}Walipa Kodi{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h5>WALIPA KODI ({{ pending_count|default:taxpayers|length }})</h5>
+    <a href="{% url 'taxpayers:taxpayer-register' %}" class="btn btn-dark"><i class="bi bi-plus"></i> Sajili Mlipakodi</a>
+</div>
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-dark">
+                <tr>
+                    <th>Jina Kamili</th>
+                    <th>TIN</th>
+                    <th>NIDA</th>
+                    <th>Mkoa</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in taxpayers %}
+                <tr>
+                    <td>{{ t.full_name }}</td>
+                    <td class="fw-bold">{{ t.tin_number }}</td>
+                    <td>{{ t.nida_number|default:"-" }}</td>
+                    <td>{{ t.region|upper }}</td>
+                    <td>
+                        {% if t.verification_status == 'VERIFIED' %}<span class="badge bg-success">Imethibitishwa</span>
+                        {% elif t.verification_status == 'PENDING' %}<span class="badge bg-warning text-dark">Inasubiri</span>
+                        {% else %}<span class="badge bg-danger">Imekataliwa</span>{% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'taxpayers:taxpayer-detail' t.id %}" class="btn btn-sm btn-outline-primary">Tazama</a>
+                    </td>
+                </tr>
+                {% endfor %}
+
+                {% for u in pending_users %}
+                <tr style="background-color: #fff3cd;">
+                    <td>{{ u.username }}<br><small class="text-muted">{{ u.phone }}</small></td>
+                    <td class="fw-bold">{{ u.tin_number }}</td>
+                    <td><small>{{ u.nida_number }}</small></td>
+                    <td><span class="badge bg-info">{{ u.region|upper }}</span></td>
+                    <td><span class="badge bg-warning text-dark">PENDING</span></td>
+                    <td>
+                        <div class="d-flex gap-1">
+                            <form method="post" action="{% url 'accounts:approve_user' u.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-success">Approve</button>
+                            </form>
+                            <form method="post" action="{% url 'accounts:reject_user' u.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-danger">Reject</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+
+                {% if not taxpayers and not pending_users %}
+                <tr><td colspan="6" class="text-center p-4">Hakuna mlipa kodi</td></tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
