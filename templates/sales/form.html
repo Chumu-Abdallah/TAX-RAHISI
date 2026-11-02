@@ -1,0 +1,32 @@
+{% extends 'base_pro.html' %}
+{% block page_title %}Mauzo Mpya{% endblock %}
+{% block content %}
+<div class="row justify-content-center"><div class="col-md-8"><div class="card p-4">
+    <h5 class="mb-3">Fomu ya Mauzo - EFD</h5>
+    <form method="post" novalidate>{% csrf_token %}
+        <div class="row g-3">
+            <div class="col-md-6"><label class="form-label">Biashara *</label>{{ form.business }}</div>
+            <div class="col-md-6"><label class="form-label">Invoice No *</label>{{ form.invoice_no }}</div>
+            <div class="col-md-6"><label class="form-label">Jina la Mteja</label>{{ form.customer_name }}</div>
+            <div class="col-md-6"><label class="form-label">TIN ya Mteja</label>{{ form.customer_tin }}</div>
+            <div class="col-md-4"><label class="form-label">Tarehe *</label>{{ form.sale_date }}</div>
+            <div class="col-md-4"><label class="form-label">Kiasi Bila VAT *</label>{{ form.amount_excl_vat }}</div>
+            <div class="col-md-4"><label class="form-label">VAT</label>{{ form.vat_amount }}</div>
+            <div class="col-md-6"><label class="form-label">Jumla (Incl VAT)</label>{{ form.amount_incl_vat }}</div>
+            <div class="col-md-3"><label class="form-label">EFD?</label><div class="form-check mt-2">{{ form.has_efd_receipt }} <label class="form-check-label">Nina Risiti</label></div></div>
+            <div class="col-md-3"><label class="form-label">EFD No</label>{{ form.efd_receipt_no }}</div>
+        </div>
+        {% if form.non_field_errors %}<div class="alert alert-danger mt-3">{{ form.non_field_errors }}</div>{% endif %}
+        <button class="btn btn-dark w-100 mt-4">Hifadhi Mauzo</button>
+    </form>
+</div></div></div>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  const excl = document.querySelector('[name="amount_excl_vat"]');
+  const vat = document.querySelector('[name="vat_amount"]');
+  const incl = document.querySelector('[name="amount_incl_vat"]');
+  function calc(){ if(excl && vat && incl){ const e=parseFloat(excl.value)||0; const v=parseFloat(vat.value)||0; incl.value=(e+v).toFixed(2); }}
+  excl?.addEventListener('input', calc); vat?.addEventListener('input', calc);
+});
+</script>
+{% endblock %}

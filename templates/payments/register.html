@@ -1,0 +1,25 @@
+{% extends 'base_pro.html' %}
+{% block page_title %}Sajili Mlipakodi{% endblock %}
+{% block content %}
+<div class="row justify-content-center"><div class="col-md-8"><div class="card p-4">
+    <h5 class="mb-3">Fomu ya Usajili TRA / ZRB</h5>
+    {% if error %}<div class="alert alert-danger">{{ error }}</div>{% endif %}
+    <form method="post" novalidate>{% csrf_token %}
+        <div class="row g-3">
+            <div class="col-md-6"><label class="form-label">TIN Number *</label>{{ form.tin_number }} {% if form.tin_number.errors %}<small class="text-danger">{{ form.tin_number.errors.0 }}</small>{% endif %}</div>
+            <div class="col-md-6"><label class="form-label">NIDA *</label>{{ form.nida_number }} {% if form.nida_number.errors %}<small class="text-danger">{{ form.nida_number.errors.0 }}</small>{% endif %}</div>
+            <div class="col-md-4"><label class="form-label">Aina ya Mlipakodi</label>{{ form.taxpayer_type }}</div>
+            <div class="col-md-8"><label class="form-label">Jina la Biashara (Kampuni)</label>{{ form.business_name }}</div>
+            <div class="col-md-4"><label class="form-label">Jina la Kwanza *</label>{{ form.first_name }}</div>
+            <div class="col-md-4"><label class="form-label">Jina la Kati</label>{{ form.middle_name }}</div>
+            <div class="col-md-4"><label class="form-label">Jina la Mwisho *</label>{{ form.last_name }}</div>
+            <div class="col-md-4"><label class="form-label">Mkoa *</label>{{ form.region }}</div>
+            <div class="col-md-4"><label class="form-label">Wilaya *</label>{{ form.district }}</div>
+            <div class="col-md-4"><label class="form-label">Kata</label>{{ form.ward }}</div>
+        </div>
+        {% if form.non_field_errors %}<div class="alert alert-danger mt-3">{{ form.non_field_errors }}</div>{% endif %}
+        <button class="btn btn-dark w-100 mt-4">Hifadhi na Tuma TRA</button>
+    </form>
+</div></div></div>
+<style>.form-control, .form-select{padding:0.6rem}</style>
+{% endblock %}

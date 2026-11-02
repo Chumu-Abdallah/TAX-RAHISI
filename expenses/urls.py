@@ -1,13 +1,12 @@
 from django.urls import path
-from .views import ExpenseListCreateView, ExpenseSummaryView
+from .views import ExpenseListCreateView, ExpenseSummaryView, expense_html_page
 
 app_name = 'expenses'
 
 urlpatterns = [
-    path('', ExpenseListCreateView.as_view(), name='list'),
-    path('summary/', ExpenseSummaryView.as_view(), name='summary'),
-    
-    # HTML Views - kwa ajili ya form.html na detail.html
-    path('create/', ExpenseListCreateView.as_view(), name='create'),
-    path('<uuid:pk>/', ExpenseListCreateView.as_view(), name='detail'),
+    path('api/', ExpenseListCreateView.as_view(), name='api-list'),
+    path('api/summary/', ExpenseSummaryView.as_view(), name='api-summary'),
+    path('', expense_html_page, name='list'),
+    path('create/', expense_html_page, name='create'), # <- Tumia ile ile, hakuna haja ya view tofauti
+    path('<uuid:pk>/', expense_html_page, name='detail'), # detail pia unaiona kwenye modal
 ]

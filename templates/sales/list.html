@@ -1,0 +1,42 @@
+{% extends 'base_pro.html' %}
+{% load humanize %}
+{% block page_title %}Mauzo{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h5>MAUZO ({{ sales.paginator.count }})</h5>
+    <div class="d-flex gap-2">
+        <a href="{% url 'sales:import' %}" class="btn btn-outline-dark"><i class="bi bi-file-earmark-excel"></i> Import Excel</a>
+        <a href="{% url 'sales:create' %}" class="btn btn-dark"><i class="bi bi-plus"></i> Mauzo Mpya</a>
+    </div>
+</div>
+
+<div class="card mb-3 p-2">
+    <form method="get" class="d-flex gap-2">
+        <select name="business" class="form-select w-auto"><option value="">Biashara Zote</option>{% for b in businesses %}<option value="{{ b.id }}" {% if request.GET.business == b.id|stringformat:"s" %}selected{% endif %}>{{ b.business_name }}</option>{% endfor %}</select>
+        <button class="btn btn-dark">Chuja</button>
+        {% if request.GET.business %}<a href="{% url 'sales:summary' request.GET.business %}" class="btn btn-outline-primary">Muhtasari wa Mwezi</a>{% endif %}
+    </form>
+</div>
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-dark"><tr><th>Tarehe</th><th>Invoice</th><th>Mteja / TIN</th><th>Bila VAT</th><th>VAT</th><th>Jumla</th><th>EFD</th></tr></thead>
+            <tbody>
+                {% for s in sales %}
+                <tr>
+                    <td>{{ s.sale_date|date:"d/m/Y" }}</td>
+                    <td class="fw-bold">{{ s.invoice_no }}</td>
+                    <td>{{ s.customer_name|default:"-" }}<br><small class="text-muted">{{ s.customer_tin|default:"" }}</small></td>
+                    <td>{{ s.amount_excl_vat|intcomma }}</td>
+                    <td class="text-primary">{{ s.vat_amount|intcomma }}</td>
+                    <td class="fw-bold">{{ s.amount_incl_vat|intcomma }}</td>
+                    <td>{% if s.has_efd_receipt %}<span class="badge bg-success">✓ {{ s.efd_receipt_no|default:"EFD" }}</span>{% else %}<span class="badge bg-danger">Hakuna</span>{% endif %}</td>
+                </tr>
+                {% empty %}<tr><td colspan="7" class="text-center p-4">Hakuna mauzo - <a href="{% url 'sales:create' %}">Ongeza</a></td></tr>{% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if sales.has_other_pages %}<div class="p-3 d-flex justify-content-center">{% if sales.has_previous %}<a href="?page={{ sales.previous_page_number }}" class="btn btn-sm btn-outline-dark me-2">Nyuma</a>{% endif %}Page {{ sales.number }} / {{ sales.paginator.num_pages }}{% if sales.has_next %}<a href="?page={{ sales.next_page_number }}" class="btn btn-sm btn-dark ms-2">Mbele</a>{% endif %}</div>{% endif %}
+</div>
+{% endblock %}

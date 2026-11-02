@@ -1,8 +1,23 @@
-.env
-__pycache__/
-*.pyc
+# Virtual environment
+venv/
+.venv/
+
+# Local database
 db.sqlite3
-media/
-staticfiles
-venve/
+
+# Django static files
+staticfiles/
+
+# Python cache
+__pycache__/
+*.py[code]
+
+# Secret environment variables
+.env
+.evn
+
+# Log files
 *.log
+
+# User uploaded media
+media/

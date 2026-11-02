@@ -1,0 +1,127 @@
+{% extends 'base_pro.html' %}
+{% load humanize %}
+{% block page_title %}Hesabu ya Kodi TRA{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <!-- KIKOKOTOZI CHA PAPO HAPO -->
+    <div class="col-lg-5">
+        <div class="card p-4 shadow-sm">
+            <h5 class="mb-3"><i class="bi bi-calculator"></i> Kokotoa Kodi Haraka</h5>
+            
+            <div class="mb-3">
+                <label class="form-label">Aina ya Kodi</label>
+                <select id="tax_type" class="form-select">
+                    <option value="VAT">VAT 18% (Inclusive)</option>
+                    <option value="PRES">Presumptive Tax (Wafanyabiashara wadogo)</option>
+                </select>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">Kiasi (TZS)</label>
+                <input type="number" id="amount" class="form-control form-control-lg" placeholder="mf: 1,180,000" value="1180000">
+                <small class="text-muted">Kwa VAT weka jumla iliyojumuisha VAT</small>
+            </div>
+            
+            <button id="btnCalc" class="btn btn-dark w-100">
+                <i class="bi bi-lightning"></i> Kokotoa Sasa
+            </button>
+
+            <div id="resultBox" class="mt-4 d-none">
+                <hr>
+                <h6>Matokeo:</h6>
+                <div class="bg-light p-3 rounded">
+                    <div class="d-flex justify-content-between"><span>Mauzo Halisi (Net):</span><b id="net_amount">-</b></div>
+                    <div class="d-flex justify-content-between"><span>Kodi ya VAT (18%):</span><b class="text-danger" id="vat_amount">-</b></div>
+                    <div class="d-flex justify-content-between border-top pt-2 mt-2"><span>Jumla (Gross):</span><b id="gross_amount">-</b></div>
+                    <div class="d-flex justify-content-between d-none" id="pres_row"><span>Presumptive Tax:</span><b class="text-success" id="pres_tax">-</b></div>
+                </div>
+                <small class="text-muted d-block mt-2">Formula: VAT = Inclusive * 18/118 (Kwa mujibu wa TRA 2024/2025)</small>
+            </div>
+        </div>
+
+        <div class="card p-3 mt-3">
+            <small class="text-muted"><b>Viwango TRA:</b><br>
+            VAT 18% | Corp 30% | WHT 5% | SDL 4% | PAYE 0% hadi 270k<br>
+            Presumptive: 4M=100k, 7M=150k, 12M=300k</small>
+        </div>
+    </div>
+
+    <!-- ORODHA YA HESABU ZILIZOHIFADHIWA -->
+    <div class="col-lg-7">
+        <div class="card">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <span>Hesabu Zilizohifadhiwa (Audit TRA)</span>
+                <span class="badge bg-light text-dark">{{ assessments|length }}</span>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead><tr><th>Biashara</th><th>Aina</th><th>Kipindi</th><th>Kiasi cha Kodi</th><th>Action</th></tr></thead>
+                    <tbody>
+                    {% for a in assessments %}
+                    <tr>
+                        <td>{{ a.business.business_name|default:"-" }}<br><small class="text-muted">{{ a.taxable_amount|intcomma }}</small></td>
+                        <td><span class="badge bg-dark">{{ a.get_tax_type_display }}</span></td>
+                        <td><small>{{ a.period_start }} - {{ a.period_end }}</small></td>
+                        <td class="fw-bold text-danger">{{ a.tax_amount|intcomma }} TZS</td>
+                        <td>
+                            {% if a.id %}
+                            <a href="{% url 'payments:create' a.id %}" class="btn btn-sm btn-success">Lipa</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="5" class="text-center p-4 text-muted">Hakuna hesabu iliyohifadhiwa bado<br><small>Zitaonekana hapa baada ya TaxtionService.assess_monthly_vat()</small></td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('btnCalc').addEventListener('click', async () => {
+    const amount = document.getElementById('amount').value;
+    const tax_type = document.getElementById('tax_type').value;
+    const btn = document.getElementById('btnCalc');
+    
+    if(!amount){ alert('Weka kiasi'); return; }
+    
+    btn.innerHTML = 'Inakokotoa...';
+    btn.disabled = true;
+    
+    try {
+        const res = await fetch("{% url 'taxation:tax_calculate' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ amount: amount, tax_type: tax_type })
+        });
+        const data = await res.json();
+        
+        document.getElementById('resultBox').classList.remove('d-none');
+        
+        if(tax_type === 'VAT'){
+            document.getElementById('pres_row').classList.add('d-none');
+            document.getElementById('net_amount').innerText = Number(data.net_amount).toLocaleString() + ' TZS';
+            document.getElementById('vat_amount').innerText = Number(data.vat_amount).toLocaleString() + ' TZS';
+            document.getElementById('gross_amount').innerText = Number(data.gross_amount).toLocaleString() + ' TZS';
+        } else {
+            document.getElementById('pres_row').classList.remove('d-none');
+            document.getElementById('pres_tax').innerText = Number(data.tax).toLocaleString() + ' TZS';
+            document.getElementById('net_amount').innerText = '-';
+            document.getElementById('vat_amount').innerText = '-';
+            document.getElementById('gross_amount').innerText = Number(amount).toLocaleString() + ' TZS';
+        }
+    } catch(e){
+        alert('Error: ' + e);
+    } finally {
+        btn.innerHTML = '<i class="bi bi-lightning"></i> Kokotoa Sasa';
+        btn.disabled = false;
+    }
+});
+</script>
+{% endblock %}

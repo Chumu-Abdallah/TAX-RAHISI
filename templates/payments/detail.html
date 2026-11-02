@@ -1,0 +1,36 @@
+{% extends 'base_pro.html' %}
+{% block page_title %}Wasifu wa Mlipakodi{% endblock %}
+{% block content %}
+<div class="card p-4">
+    {% if taxpayer %}
+    <div class="d-flex justify-content-between align-items-center">
+        <h4>{{ taxpayer.full_name }} <small class="text-muted">- {{ taxpayer.tin_number }}</small></h4>
+        <span class="badge {% if taxpayer.verification_status == 'VERIFIED' %}bg-success{% elif taxpayer.verification_status == 'PENDING' %}bg-warning text-dark{% else %}bg-danger{% endif %} fs-6">{{ taxpayer.get_verification_status_display }}</span>
+    </div>
+    <hr>
+    <div class="row g-3">
+        <div class="col-md-6"><b>TIN:</b> {{ taxpayer.tin_number }}</div>
+        <div class="col-md-6"><b>NIDA:</b> {{ taxpayer.nida_number|default:"-" }}</div>
+        <div class="col-md-6"><b>Aina:</b> {{ taxpayer.get_taxpayer_type_display }}</div>
+        <div class="col-md-6"><b>Mkoa:</b> {{ taxpayer.region }} / {{ taxpayer.district|default:"-" }} / {{ taxpayer.ward|default:"-" }}</div>
+        <div class="col-md-6"><b>VAT:</b> {% if taxpayer.is_vat_registered %} {{ taxpayer.vat_number }} {% else %} Hajajisajili {% endif %}</div>
+        <div class="col-md-6"><b>Status:</b> {{ taxpayer.verification_status }}</div>
+        <div class="col-md-6"><b>Tarehe:</b> {{ taxpayer.created_at|date:"d/m/Y" }}</div>
+        <div class="col-md-6"><b>User:</b> {{ taxpayer.user.username }} ({{ taxpayer.user.phone }})</div>
+    </div>
+
+    {% if request.user.role == 'ADMIN' or request.user.role == 'MKURUGENZI' %}
+    <hr><div class="d-flex gap-2 flex-wrap">
+        {% if taxpayer.verification_status == 'PENDING' %}
+        <form method="post" action="{% url 'taxpayers:taxpayer-verify' taxpayer.id %}">{% csrf_token %}<button class="btn btn-success"><i class="bi bi-check-circle"></i> Approve / Thibitisha</button></form>
+        <form method="post" action="{% url 'taxpayers:taxpayer-reject' taxpayer.id %}">{% csrf_token %}<button class="btn btn-warning"><i class="bi bi-x-circle"></i> Reject / Kataa</button></form>
+        {% endif %}
+        <form method="post" action="{% url 'taxpayers:taxpayer-delete' taxpayer.id %}" onsubmit="return confirm('Una uhakika unataka kufuta {{ taxpayer.full_name }}?')">{% csrf_token %}<button class="btn btn-danger"><i class="bi bi-trash"></i> Futa Owner</button></form>
+        <a href="{% url 'taxpayers:list' %}" class="btn btn-secondary">Rudi</a>
+    </div>
+    {% endif %}
+    {% else %}
+    <p class="text-center p-4">{{ error|default:"Hakuna taarifa" }}<br><a href="{% url 'taxpayers:taxpayer-register' %}" class="btn btn-dark mt-3">Sajili Sasa</a></p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends 'base_pro.html' %}
+{% block page_title %}Import Mauzo{% endblock %}
+{% block content %}
+<div class="row justify-content-center"><div class="col-md-6"><div class="card p-4">
+    <h5 class="mb-3"><i class="bi bi-file-earmark-excel text-success"></i> Ingiza kutoka Excel</h5>
+    <div class="alert alert-info small">Columns zinazohitajika: <code>invoice_no, sale_date, amount_excl, vat</code></div>
+    <form method="post" enctype="multipart/form-data">{% csrf_token %}
+        <div class="mb-3"><label class="form-label">Chagua Biashara *</label><select name="business" class="form-select" required><option value="">-- Chagua --</option>{% for b in businesses %}<option value="{{ b.id }}">{{ b.business_name }}</option>{% endfor %}</select></div>
+        <div class="mb-3"><label class="form-label">Faili la Excel *</label><input type="file" name="excel_file" accept=".xlsx,.xls,.csv" class="form-control" required></div>
+        <button class="btn btn-success w-100"><i class="bi bi-upload"></i> Pakia na Ingiza</button>
+    </form>
+    <a href="{% url 'sales:list' %}" class="btn btn-secondary w-100 mt-2">Rudi</a>
+</div></div></div>
+{% endblock %}
